@@ -1,4 +1,4 @@
-import { getAllVideos, getVideoById, likeVideo as likeVideoService, addComment as addCommentService, getCommentsByVideoId, bookmarkVideo as bookmarkVideoService } from '../services/videoService.js';
+import { createVideo as createVideoService,getAllVideos, getVideoById, likeVideo as likeVideoService, addComment as addCommentService, getCommentsByVideoId, bookmarkVideo as bookmarkVideoService } from '../services/videoService.js';
 
 export const getVideos = async (req, res, next) => {
     try {
@@ -52,5 +52,17 @@ export const bookmarkVideo = async (req, res, next) => {
         res.json(result);
     } catch (err) {
         res.status(400).json({ message: err.message });
+    }
+};
+
+export const createVideo = async (req, res, next) => {
+    try {
+        const { title, description, category, file_path } = req.body;
+        // In a real app, you might use multer to handle the file upload here.
+        // For this assignment, we are registering the local file paths of the downloaded videos.
+        const newVideo = await createVideoService(title, description, category, file_path);
+        res.status(201).json(newVideo);
+    } catch (err) {
+        next(err);
     }
 };

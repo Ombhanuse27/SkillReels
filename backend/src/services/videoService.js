@@ -49,3 +49,11 @@ export const bookmarkVideo = async (userId, videoId) => {
         throw e;
     }
 };
+
+export const createVideo = async (title, description, category, filePath) => {
+    const result = await pool.query(
+        'INSERT INTO videos (title, description, category, file_path) VALUES ($1, $2, $3, $4) RETURNING *',
+        [title, description, category, filePath]
+    );
+    return result.rows[0];
+};
