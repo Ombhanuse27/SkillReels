@@ -2,8 +2,12 @@ import { registerUser, loginUser, getUserById } from '../services/authService.js
 
 export const register = async (req, res, next) => {
     try {
-        const { email, password } = req.body;
-        const user = await registerUser(email, password);
+        const { name, email, password } = req.body;
+        if (!name || !email || !password) {
+            return res.status(400).json({ message: "Name, email, and password are required" });
+        }
+        
+        const user = await registerUser(name, email, password);
         res.status(201).json(user);
     } catch (err) {
         next(err);

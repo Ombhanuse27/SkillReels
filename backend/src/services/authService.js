@@ -2,23 +2,19 @@ import pool from '../config/db.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-export const registerUser = async (email, password) => {
+
+export const registerUser = async (name, email, password) => {
     try {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
         
         const result = await pool.query(
-            'INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id, email',
-            [email, hashedPassword]
+            'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id, name, email',
+            [name, email, hashedPassword]
         );
         return result.rows[0];
     } catch (err) {
-        // Postgres error code for unique_violation
-        if (err.code === '23505') {
-            const customError = new Error('Email is already registered.');
-            customError.status = 409; // Conflict
-            throw customError;
-        }
+        if (err.code === '23505') throw { status: 409, message: 'Email is already registered.' };
         throw err;
     }
 };
