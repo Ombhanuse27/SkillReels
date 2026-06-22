@@ -6,11 +6,17 @@ const authenticate = (req, res, next) => {
   if (!token) return res.status(401).json({ message: 'Access Denied. No token provided.' });
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+    // FIX: Add the same fallback secret used in authService.js
+    const secret = process.env.JWT_SECRET || 'fallback_secret_key_for_development';
+    
+    const decoded = jwt.verify(token, secret);
+    
+    // If your login signed { id: user.id }, decoded will be an object with an 'id'.
+    // req.user becomes { id: 'some-uuid' }, which perfectly matches req.user.id in your controllers!
+    req.user = decoded; 
     next();
   } catch (err) {
-    res.status(400).json({ message: 'Invalid token.' });
+    res.status(401).json({ message: 'Invalid or expired token.' });
   }
 };
 

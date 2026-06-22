@@ -37,6 +37,7 @@ const VideoPlayer = ({ video }) => {
                 className="w-full h-full object-cover cursor-pointer"
                 loop
                 playsInline
+                muted
                 onClick={togglePlay}
             />
 
