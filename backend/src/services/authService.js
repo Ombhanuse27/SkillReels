@@ -3,14 +3,24 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 export const registerUser = async (email, password) => {
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-    
-    const result = await pool.query(
-        'INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id, email',
-        [email, hashedPassword]
-    );
-    return result.rows[0];
+    try {
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+        
+        const result = await pool.query(
+            'INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id, email',
+            [email, hashedPassword]
+        );
+        return result.rows[0];
+    } catch (err) {
+        // Postgres error code for unique_violation
+        if (err.code === '23505') {
+            const customError = new Error('Email is already registered.');
+            customError.status = 409; // Conflict
+            throw customError;
+        }
+        throw err;
+    }
 };
 
 export const loginUser = async (email, password) => {

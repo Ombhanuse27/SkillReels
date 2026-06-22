@@ -4,22 +4,22 @@ const useElementOnScreen = (options, targetRef) => {
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
-        const observer = new IntersectionObserver((entries) => {
-            const [entry] = entries;
-            // Update state to true if the video is currently crossing the screen threshold
+        if (!targetRef || !targetRef.current) return;
+
+        const observer = new IntersectionObserver(([entry]) => {
             setIsVisible(entry.isIntersecting);
         }, options);
 
         const currentRef = targetRef.current;
-        if (currentRef) {
-            observer.observe(currentRef);
-        }
+        observer.observe(currentRef);
 
-        // Cleanup function to unobserve when the component unmounts
         return () => {
             if (currentRef) observer.unobserve(currentRef);
         };
-    }, [targetRef, options]);
+        
+    // Stringify options to prevent infinite React re-renders if passed inline
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [targetRef, JSON.stringify(options)]); 
 
     return isVisible;
 };
