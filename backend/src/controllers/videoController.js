@@ -2,7 +2,7 @@ import { createVideo as createVideoService,getAllVideos, getVideoById, likeVideo
 
 export const getVideos = async (req, res, next) => {
     try {
-        const videos = await getAllVideos();
+        const videos = await getAllVideos(req.user?.id);
         res.json(videos);
     } catch (err) {
         next(err);

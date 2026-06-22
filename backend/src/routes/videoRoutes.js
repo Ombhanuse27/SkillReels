@@ -4,12 +4,12 @@ import authenticate from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-router.get('/', getVideos);
-router.get('/:id', getVideo);
+router.get('/',  authenticate, getVideos);
+router.get('/:id', authenticate, getVideo);
 
 router.post('/:id/like', authenticate, likeVideo);
 router.post('/:id/comment', authenticate, addComment);
-router.get('/:id/comments', getComments);
+router.get('/:id/comments', authenticate, getComments);
 router.post('/:id/bookmark', authenticate, bookmarkVideo);
 router.post('/', authenticate, createVideo);
 
